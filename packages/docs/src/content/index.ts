@@ -2,7 +2,6 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import { visit } from "unist-util-visit";
 import { toString } from "mdast-util-to-string";
-import { loader, type StaticSource } from "fumadocs-core/source";
 import matter from "gray-matter";
 import GithubSlugger from "github-slugger";
 import type { DocsConfig } from "../config.js";
@@ -62,27 +61,10 @@ export function createDocsSource(config: DocsConfig, files: DocFile[]) {
       canonicalUrl: config.siteUrl + url,
     });
   }
-  const sources = new Map(
-    config.locales.map((locale) => {
-      const source: StaticSource<{
-        pageData: DocPage;
-        metaData: { title?: string };
-      }> = {
-        files: pages
-          .filter((p) => p.contentLocale === locale)
-          .map((p) => ({
-            type: "page" as const,
-            path: p.slug + ".md",
-            slugs: p.slug.split("/"),
-            data: p,
-          })),
-      };
-      return [
-        locale,
-        loader(source, { baseUrl: `/${locale}${config.basePath}` }),
-      ];
-    }),
+  const byPath = new Map(
+    pages.map((page) => [`${page.contentLocale}/${page.slug}`, page]),
   );
+  const slugs = [...new Set(pages.map((page) => page.slug))];
   function loadDoc({
     locale,
     slug,
@@ -92,11 +74,11 @@ export function createDocsSource(config: DocsConfig, files: DocFile[]) {
   }): DocPage | undefined {
     if (!validSlug(slug) || !config.locales.includes(locale)) return undefined;
     const found =
-      sources.get(locale)?.getPage(slug.split("/")) ??
-      sources.get(config.fallbackLocale)?.getPage(slug.split("/"));
+      byPath.get(`${locale}/${slug}`) ??
+      byPath.get(`${config.fallbackLocale}/${slug}`);
     return found
       ? {
-          ...found.data,
+          ...found,
           requestedLocale: locale,
           url: docUrl(config, locale, slug),
         }
@@ -113,12 +95,12 @@ export function createDocsSource(config: DocsConfig, files: DocFile[]) {
     pages: () => pages,
     routes: () =>
       config.locales.flatMap((locale) =>
-        [...new Set(pages.map((p) => p.slug))]
+        slugs
           .filter((slug) => loadDoc({ locale, slug }))
           .map((slug) => docUrl(config, locale, slug)),
       ),
     searchEntries: (locale: string) =>
-      [...new Set(pages.map((p) => p.slug))]
+      slugs
         .map((slug) => loadDoc({ locale, slug }))
         .filter((p): p is DocPage => !!p),
   };

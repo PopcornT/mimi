@@ -21,7 +21,7 @@ const files = [
   },
 ];
 describe("content contract", () => {
-  it("indexes real content through Fumadocs and preserves nested slugs", () => {
+  it("indexes real content and preserves nested slugs", () => {
     const s = createDocsSource(defineDocsConfig(config), files);
     expect(s.loadDoc({ locale: "zh-TW", slug: "nested/setup" })?.title).toBe(
       "安裝",

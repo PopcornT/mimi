@@ -85,3 +85,25 @@ test("table-of-contents anchors remain below the fixed Carbon header", async ({
     .evaluate((el) => el.getBoundingClientRect().top);
   expect(top).toBeGreaterThanOrEqual(48);
 });
+test("search index failures are recoverable after reopening search", async ({
+  page,
+}) => {
+  await page.route("**/search-index.zh-TW.json", (route) =>
+    route.fulfill({ status: 503, body: "Unavailable" }),
+  );
+  await page.goto("http://127.0.0.1:4317/zh-TW/docs/grade-appeal/");
+  const trigger = page.getByRole("button", { name: "搜尋文件", exact: true });
+  await trigger.click();
+  await expect(page.locator('.qd-searchResults [role="alert"]')).toBeVisible();
+  await page.keyboard.press("Escape");
+  await page.unroute("**/search-index.zh-TW.json");
+  await trigger.click();
+  await page.getByRole("searchbox").fill("申訴");
+  const result = page
+    .locator(".qd-searchResults a")
+    .filter({ hasText: "成績申訴" })
+    .first();
+  await expect(result).toBeVisible();
+  await result.click();
+  await expect(page).toHaveURL(/\/zh-TW\/docs\/grade-appeal\/$/);
+});

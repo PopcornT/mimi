@@ -1,5 +1,7 @@
 # Execution ledger
 
+## 0.1.0 history (superseded by the 0.2.0 decision below)
+
 Base: QJudge a37e2e64a. Original checkout untouched.
 
 Task 1: completed locally. Independent local repo.
@@ -23,3 +25,13 @@ Final local verification (2026-11-15): `npm run check` passed: typecheck, packag
 QJudge integration: typecheck/build passed; 115 static article pages passed metadata, local link and asset checks. Real-content desktop/mobile, search, Japanese labels and unknown-route 404 browser checks passed with zero page errors. Desktop/mobile screenshots inspected.
 Additional regression: unknown routes on a pure static host hydrated the generated 404 with the wrong route. Reproduced with a failing static test, then stripped scripts/modulepreloads from the fallback 404; the final browser check passed.
 Delivery boundary: framework and QJudge changes are local only. Remote CI, registry publication, Cloudflare production deployment and commercial-repository integration remain unperformed. Business example is a working fixture; actual product repository location is still needed. Existing embedded app docs remain intact.
+
+## 0.2.0: independent framework (2026-11-15)
+
+User requested complete removal of Fumadocs while keeping the architecture clean. Replaced its source loader with a locale/slug map and its search with our own portable static JSON contract, pure multilingual matching, and a small React fetch lifecycle. Carbon presentation remains separate. No Fumadocs package remains in either dependency lockfile; 30 installed packages were removed. See `docs/decisions/001-content-engine.md` for the current decision.
+
+Search regression test observed failing before replacement, then passed. Final framework check: typecheck, both example builds, 15 unit/static tests, 6 browser tests passed. Both separately installed tarball consumers built. QJudge typecheck/build and 115 article metadata/link/asset checks passed; installed dist bytes and tarball lock integrity match. A local Node measurement over 28 Traditional Chinese entries (143 KB JSON) averaged 0.35 ms per query over 100 runs; this is not a mobile-browser benchmark.
+
+Independent review found no Important/Critical issues; historical rulings above are now explicitly marked superseded. Literal all-term matching supports CJK substrings and normalized English; typo tolerance, stemming and section results are deliberately not included. Search indexes and HTML must be rebuilt/deployed together because the index format changed. Registry publication and production deployment remain unperformed.
+
+Final real-content Chrome check passed: desktop/mobile layout, Chinese search, Japanese UI and unknown-route 404, with zero page errors. Local QJudge (4319) and Business (4318) previews serve the rebuilt 0.2.0 output.

@@ -1,6 +1,6 @@
 # QJudge Carbon Docs
 
-A reusable Carbon documentation package for QJudge's own product lines. Fumadocs Core supplies content indexing and static search; React Router prerenders pages; the UI retains QJudge's Carbon layout and Markdown components.
+A reusable Carbon documentation package for QJudge's own product lines. Our content loader and static search are owned in this repository; React Router prerenders pages; the UI retains QJudge's Carbon layout and Markdown components.
 
 ## Local development
 
@@ -25,7 +25,7 @@ npm run verify:package
 
 Start from `examples/business`. Configure `docs.config.json`, add files to `content/<locale>/<slug>.md`, then build with React Router. It emits `build/client`, suitable for static hosting. Configure your host to serve its `404.html` with HTTP 404; do not turn all unknown URLs into an SPA fallback.
 
-The examples use simple explicit route modules rather than an additional custom CLI. Fumadocs UI and Next.js are not required. Only Markdown is supported in this first release; MDX is deferred.
+The examples use simple explicit route modules rather than an additional custom CLI. No Fumadocs packages are installed. Only Markdown is supported in this first release; MDX is deferred.
 
 ## Package API
 
@@ -68,3 +68,12 @@ See `EXECUTION.md`. Local builds and browser checks are separate from remote CI,
 ## License
 
 MIT. Carbon Markdown renderer/styles derive from QJudge (copyright 2025 quan0715). IBM Plex's font license is included in the built package. Dependencies retain their upstream licenses.
+
+## Internal boundaries
+
+- `content/`: build-time Markdown parsing, page lookup, translation fallback, routes and static artifacts. Node-only dependencies stay here.
+- `search/index.ts`: portable JSON contract and pure query ranking, with no React or Markdown dependencies.
+- `search/useDocsSearch.ts`: browser loading lifecycle, cancellation and query state.
+- `carbon/`: rendering and interaction using Carbon; no content filesystem access.
+
+Search uses normalized, case-insensitive literal matching (including CJK substrings), all query terms must match, and titles rank above descriptions and body text. It returns up to 20 article links. It deliberately does not offer typo tolerance, stemming or section-level results. This keeps the first-party implementation small for our current documentation corpus; benchmark before expanding to large corpora.

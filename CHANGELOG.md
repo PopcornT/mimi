@@ -1,3 +1,9 @@
+# 0.2.0
+
+- Remove Fumadocs Core and its transitive dependencies.
+- Own content lookup, portable static search data, multilingual matching and React loading lifecycle.
+- Search JSON format changed: rebuild and deploy pages and indexes together.
+
 # Changes
 
 ## 0.1.0 (local release candidate)

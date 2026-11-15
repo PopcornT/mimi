@@ -1,16 +1,13 @@
 # Content engine decision
 
-Use Fumadocs Core 16.19.3 for source loading and static full-text search, with React Router 7.18.2 for static prerendering. Preserve QJudge's Carbon React 1.96.0 renderer and article layout.
+Updated 2026-11-15: own the documentation framework and remove Fumadocs Core entirely. The earlier 0.1.0 experiment used its source loader and search; 0.2.0 replaces both.
 
-Verified: both fixtures build static HTML; Chinese search works without a backend; no hydration errors in Chrome; Markdown images and tables render. Source baseline: QJudge a37e2e64a (PR #484), docs tests 14/14.
+Keep content, search and presentation separate, inspired by the headless boundaries in https://www.fumadocs.dev/docs/headless. No upstream source is copied or forked. Avoid recreating its plugin/provider abstraction: the two products need a simple map-based source and static search data.
 
-Do not install Fumadocs UI. Do not fork Fumadocs. Markdown uses react-markdown/remark/rehype and the existing Carbon renderer. MDX is deferred: neither initial consumer requires executable MDX, and introducing a second compiler would create migration risk for existing raw HTML. This is a deliberate narrower first release than the original candidate architecture.
+Content is parsed once into our DocPage contract. A locale/slug map resolves exact translations and then the configured fallback. Navigation, canonical URLs and static routes remain our own contract. Search artifacts contain plain text extracted from Markdown, one article per entry. Browser search uses Unicode NFKC/case normalization and literal all-term matching, with title/description/body ranking. This handles Chinese substrings without a tokenizer dependency. No typo tolerance, stemming or heading-level result links in this version.
 
-React Router requires prerender paths without a trailing slash, while canonical URLs and static directory URLs retain it. Both forms resolve on the static host. Unknown URLs must return HTTP 404 rather than SPA fallback.
+React Router owns static prerendering; Carbon owns UI primitives; remark/rehype own Markdown parsing/rendering. These remain ordinary dependencies, not a documentation framework. MDX stays deferred.
 
-Upstream sources:
-- https://www.fumadocs.dev/docs/headless
-- https://github.com/fuma-nama/fumadocs/blob/dev/apps/docs/content/docs/(framework)/deploying/static.mdx
-- https://starlight.astro.build/guides/overriding-components/
+React Router requires prerender paths without a trailing slash, while canonical URLs and static directory URLs retain it. Unknown URLs return HTTP 404 rather than SPA fallback.
 
-No upstream source was copied. QJudge renderer/styles copied under its MIT license, retained in LICENSE. IBM Plex font license ships inside the package.
+QJudge renderer/styles retain their MIT attribution; IBM Plex font license ships inside the package.

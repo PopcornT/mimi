@@ -1,6 +1,6 @@
 import { docsLabels } from "../i18n/labels.js";
 import { Search, Link } from "@carbon/react";
-import { useStaticSearch } from "fumadocs-core/search/client";
+import { useDocsSearch } from "../search/useDocsSearch.js";
 export function DocsSearch({
   locale,
   label,
@@ -8,29 +8,25 @@ export function DocsSearch({
   locale: string;
   label: string;
 }) {
-  const { search, onSearchChange, data, isLoading, error } = useStaticSearch({
-    from: `/search-index.${locale}.json`,
-  });
+  const { query, setQuery, results, isLoading, error } = useDocsSearch(locale);
   return (
     <>
       <Search
         id="docs-search-input"
         labelText={label}
         placeholder={label}
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
       />
       <div className="qd-searchResults" aria-live="polite">
         {error && <p role="alert">{docsLabels(locale).searchError}</p>}
         {isLoading && <p>…</p>}
-        {data?.items.map((r) =>
-          r.type !== "table" ? (
-            <Link key={r.id} href={r.url}>
-              {r.content}
-            </Link>
-          ) : null,
-        )}
-        {data && !isLoading && !data.items.length && (
+        {results.map((result) => (
+          <Link key={result.url} href={result.url}>
+            {result.title}
+          </Link>
+        ))}
+        {query.trim() && !error && !isLoading && !results.length && (
           <p>{docsLabels(locale).empty}</p>
         )}
       </div>

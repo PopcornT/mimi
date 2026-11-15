@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@qjudge/docs": "0.1.0",
+    "@qjudge/docs": "0.2.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "@carbon/react": "1.96.0",
