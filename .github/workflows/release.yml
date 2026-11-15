@@ -1,0 +1,23 @@
+name: Prepare package release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck && npm run build && npm run build:examples && npm test
+      - run: npm pack -w @qjudge/docs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-candidate
+          path: '*.tgz'
+# Registry publishing is intentionally not enabled until the owner chooses a
+# registry, package scope and access policy. This workflow only creates an artifact.

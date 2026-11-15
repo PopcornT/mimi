@@ -1,0 +1,693 @@
+@use "@carbon/colors";
+@use "@carbon/layout";
+@use "@carbon/type";
+/*
+ * Markdown Styles - Following Carbon Design System Typography
+ * https://carbondesignsystem.com/guidelines/typography/overview
+ */
+
+.markdown-body {
+  /* Use Carbon's default body typography */
+  @include type.type-style("body-compact-01");
+  color: var(--cds-text-primary);
+}
+
+/* Headings - Using Carbon productive heading tokens */
+.markdown-body h1 {
+  @include type.type-style("heading-05");
+  margin-top: layout.$spacing-07;
+  margin-bottom: layout.$spacing-05;
+}
+
+.markdown-body h2 {
+  @include type.type-style("heading-04");
+  margin-top: layout.$spacing-06;
+  margin-bottom: layout.$spacing-04;
+}
+
+.markdown-body h3 {
+  @include type.type-style("heading-03");
+  margin-top: layout.$spacing-06;
+  margin-bottom: layout.$spacing-03;
+}
+
+.markdown-body h4 {
+  @include type.type-style("heading-compact-02");
+  margin-top: layout.$spacing-05;
+  margin-bottom: layout.$spacing-03;
+}
+
+.markdown-body h5 {
+  @include type.type-style("heading-compact-01");
+  margin-top: layout.$spacing-05;
+  margin-bottom: layout.$spacing-03;
+}
+
+.markdown-body h6 {
+  @include type.type-style("label-01");
+  color: var(--cds-text-secondary);
+  margin-top: layout.$spacing-05;
+  margin-bottom: layout.$spacing-03;
+}
+
+/* Paragraphs - Using Carbon body-long-01 */
+.markdown-body p {
+  @include type.type-style("body-01");
+  margin-bottom: layout.$spacing-05;
+  color: var(--cds-text-primary);
+}
+
+/* Lists */
+.markdown-body ul,
+.markdown-body ol {
+  margin-bottom: layout.$spacing-05;
+  padding-left: layout.$spacing-07;
+  color: var(--cds-text-primary);
+  list-style-position: outside;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+}
+
+.markdown-body ul ul {
+  list-style-type: circle;
+}
+
+.markdown-body ul ul ul {
+  list-style-type: square;
+}
+
+.markdown-body ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body li {
+  margin-bottom: layout.$spacing-02;
+  display: list-item;
+  @include type.type-style("body-01");
+}
+
+.markdown-body ul ul,
+.markdown-body ol ol,
+.markdown-body ul ol,
+.markdown-body ol ul {
+  margin-top: layout.$spacing-02;
+  margin-bottom: layout.$spacing-02;
+}
+
+/* Inline Code - Carbon inline snippet style */
+.markdown-body :not(pre) > code {
+  @include type.type-style("code-01");
+  background-color: var(--cds-layer);
+  padding: 0 layout.$spacing-02;
+  border-radius: 4px;
+  color: var(--cds-text-primary);
+  font-weight: 400;
+}
+
+/* Code block wrapper (Carbon CodeSnippet) */
+.markdown-body .code-block-wrapper {
+  margin-bottom: layout.$spacing-05;
+  max-inline-size: 100%;
+}
+
+.markdown-body .code-block-wrapper pre {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.markdown-body .code-block-wrapper pre code {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  color: var(--cds-text-primary);
+  @include type.type-style("code-01");
+  font-weight: 400;
+}
+
+/* Code blocks without CodeSnippet wrapper (e.g. mermaid error fallback) */
+.markdown-body > pre,
+.markdown-body .mermaid-block--error pre {
+  background-color: var(--cds-layer-01);
+  padding: layout.$spacing-05;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-bottom: layout.$spacing-05;
+  border: 1px solid var(--cds-border-subtle-01);
+  color: var(--cds-text-primary);
+}
+
+.markdown-body > pre code,
+.markdown-body .mermaid-block--error pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  @include type.type-style("code-01");
+  font-weight: 400;
+}
+
+/* Mermaid diagrams */
+.markdown-body .mermaid-block {
+  margin: layout.$spacing-05 0;
+  padding: layout.$spacing-05;
+  overflow-x: auto;
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 4px;
+  background: var(--cds-layer-01);
+}
+
+.markdown-body .mermaid-block svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.markdown-body .mermaid-block--loading {
+  min-height: 12rem;
+  background: linear-gradient(
+    90deg,
+    var(--cds-layer-01),
+    var(--cds-layer-hover-01),
+    var(--cds-layer-01)
+  );
+  background-size: 200% 100%;
+  animation: markdown-mermaid-loading 1.2s ease-in-out infinite;
+}
+
+.markdown-body .mermaid-block--error {
+  border-left: 3px solid var(--cds-support-error);
+  background: var(--cds-notification-background-error);
+}
+
+.markdown-body .mermaid-block--error p {
+  margin-bottom: layout.$spacing-04;
+}
+
+.markdown-body .mermaid-block--error pre {
+  margin: 0;
+}
+
+@keyframes markdown-mermaid-loading {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .markdown-body .mermaid-block--loading {
+    animation: none;
+  }
+}
+
+/* Blockquotes */
+.markdown-body blockquote {
+  border-left: 4px solid var(--cds-border-interactive);
+  padding-left: layout.$spacing-05;
+  margin-left: 0;
+  margin-bottom: layout.$spacing-05;
+  color: var(--cds-text-secondary);
+  font-style: normal;
+}
+
+.markdown-body blockquote p {
+  color: var(--cds-text-secondary);
+}
+
+/* Links - Using Carbon link tokens */
+.markdown-body a {
+  color: var(--cds-link-primary);
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+  color: var(--cds-link-primary-hover);
+}
+
+.markdown-body a:visited {
+  color: var(--cds-link-visited);
+}
+
+/* Tables - Carbon DataTable styling */
+.markdown-body .markdown-table {
+  margin-bottom: layout.$spacing-05;
+}
+
+.markdown-body .markdown-table td {
+  color: var(--cds-text-primary);
+}
+
+/* Horizontal rules */
+.markdown-body hr {
+  border: none;
+  border-top: 1px solid var(--cds-border-subtle);
+  margin: layout.$spacing-06 0;
+}
+
+/* Images */
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: layout.$spacing-05 0;
+}
+
+/* Strong and emphasis */
+.markdown-body strong {
+  font-weight: 600;
+  color: var(--cds-text-primary);
+}
+
+.markdown-body em {
+  font-style: italic;
+}
+
+/* Task lists */
+.markdown-body input[type="checkbox"] {
+  margin-right: layout.$spacing-03;
+}
+
+/* Math formulas (KaTeX) */
+.markdown-body .katex-display {
+  margin: layout.$spacing-05 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+:where(.markdown-body p, .markdown-body li) :not(pre) > code {
+  white-space: nowrap;
+}
+
+/* ============================================
+   Aside / Callout blocks - IBM Carbon Design Notification Style
+   https://carbondesignsystem.com/components/notification/style
+   ============================================ */
+
+.markdown-body aside {
+  display: flex;
+  flex-direction: column;
+  min-height: 3rem; /* 48px */
+  padding: layout.$spacing-04 layout.$spacing-05; /* 12px 16px */
+  margin: layout.$spacing-05 0;
+  background-color: var(--cds-notification-background-info);
+  border-left: 3px solid var(--cds-support-info);
+  border-radius: 0;
+  color: var(--cds-text-primary);
+  @include type.type-style("body-compact-01");
+}
+
+.markdown-body aside p {
+  margin: 0;
+  color: var(--cds-text-primary);
+}
+
+.markdown-body aside p + p {
+  margin-top: layout.$spacing-03;
+}
+
+.markdown-body aside p:first-child {
+  margin-top: 0;
+}
+
+.markdown-body aside p:last-child {
+  margin-bottom: 0;
+}
+
+/* Aside title styling (strong element at the start) */
+.markdown-body aside strong:first-child,
+.markdown-body aside p:first-child strong:first-child {
+  @include type.type-style("heading-compact-01");
+  font-weight: 600;
+}
+
+/* Aside variants - IBM Carbon Notification Colors
+   Supports both class and data-type attribute selectors for compatibility */
+
+/* Info (default) - Blue */
+.markdown-body aside[data-type="info"],
+.markdown-body aside[data-type="note"],
+.markdown-body aside.info,
+.markdown-body aside.note {
+  background-color: var(--cds-notification-background-info);
+  border-left-color: var(--cds-support-info);
+}
+
+/* Warning - Yellow */
+.markdown-body aside[data-type="warning"],
+.markdown-body aside[data-type="caution"],
+.markdown-body aside.warning,
+.markdown-body aside.caution {
+  background-color: var(--cds-notification-background-warning);
+  border-left-color: var(--cds-support-warning);
+}
+
+/* Error/Danger - Red */
+.markdown-body aside[data-type="error"],
+.markdown-body aside[data-type="danger"],
+.markdown-body aside.error,
+.markdown-body aside.danger {
+  background-color: var(--cds-notification-background-error);
+  border-left-color: var(--cds-support-error);
+}
+
+/* Success - Green */
+.markdown-body aside[data-type="success"],
+.markdown-body aside[data-type="tip"],
+.markdown-body aside.success,
+.markdown-body aside.tip {
+  background-color: var(--cds-notification-background-success);
+  border-left-color: var(--cds-support-success);
+}
+
+/* Inline code inside aside - Carbon inline snippet contrast */
+.markdown-body aside :not(pre) > code {
+  background-color: var(--cds-layer-02);
+  color: var(--cds-text-primary);
+}
+
+/* Lists inside aside */
+.markdown-body aside ul,
+.markdown-body aside ol {
+  margin: layout.$spacing-03 0;
+  padding-left: layout.$spacing-06;
+}
+
+.markdown-body aside li {
+  margin-bottom: layout.$spacing-02;
+}
+
+/* First heading in document - no top margin */
+.markdown-body > h1:first-child,
+.markdown-body > h2:first-child,
+.markdown-body > h3:first-child {
+  margin-top: 0;
+}
+
+/* ============================================
+   Problem Preview Specific Styles
+   ============================================ */
+
+/* Problem Title - H0 (Special largest heading with underline) */
+.markdown-body .problem-title,
+.markdown-body h1.problem-title {
+  @include type.type-style("heading-05");
+  margin: 0 0 layout.$spacing-07 0;
+  padding-bottom: layout.$spacing-04;
+  border-bottom: 2px solid var(--cds-border-strong-01);
+  color: var(--cds-text-primary);
+}
+
+/* Sample Test Case Container */
+.markdown-body .sample-case {
+  margin-bottom: layout.$spacing-06;
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--cds-layer-01);
+}
+
+.markdown-body .sample-case__header {
+  padding: layout.$spacing-04 layout.$spacing-05;
+  background-color: var(--cds-layer-02);
+  border-bottom: 1px solid var(--cds-border-subtle);
+  @include type.type-style("heading-compact-01");
+  color: var(--cds-text-primary);
+}
+
+.markdown-body .sample-case__content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.markdown-body .sample-case__column {
+  padding: layout.$spacing-05;
+}
+
+.markdown-body .sample-case__column:first-child {
+  border-right: 1px solid var(--cds-border-subtle);
+}
+
+.markdown-body .sample-case__label {
+  margin: 0 0 layout.$spacing-03 0;
+  @include type.type-style("label-01");
+  font-weight: 600;
+  color: var(--cds-text-secondary);
+  text-transform: uppercase;
+}
+
+.markdown-body .sample-case__code {
+  background: var(--cds-field);
+  padding: layout.$spacing-04;
+  border-radius: 4px;
+  margin: 0;
+  overflow-x: auto;
+  @include type.type-style("code-01");
+  line-height: 1.5;
+  border: 1px solid var(--cds-border-subtle);
+  color: var(--cds-text-primary);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Keyword Tags for Code Restrictions */
+.markdown-body .keyword-group {
+  margin-bottom: layout.$spacing-05;
+}
+
+.markdown-body .keyword-group h3 {
+  @include type.type-style("label-01");
+  font-weight: 600;
+  color: var(--cds-text-secondary);
+  text-transform: uppercase;
+  margin: 0 0 layout.$spacing-03 0;
+}
+
+.markdown-body .keyword-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: layout.$spacing-03;
+}
+
+.markdown-body .keyword-tag {
+  display: inline-block;
+  padding: layout.$spacing-02 layout.$spacing-03;
+  border-radius: 4px;
+  @include type.type-style("code-02");
+  background-color: var(--cds-layer-01);
+}
+
+.markdown-body .keyword-tag--success {
+  background-color: var(--cds-tag-background-green);
+  color: var(--cds-tag-color-green);
+}
+
+.markdown-body .keyword-tag--error {
+  background-color: var(--cds-tag-background-red);
+  color: var(--cds-tag-color-red);
+}
+
+/* Empty State */
+.markdown-body .empty-state {
+  padding: layout.$spacing-07;
+  text-align: center;
+  color: var(--cds-text-secondary);
+}
+
+/* ============================================
+   Custom Syntax Highlighting for Code Blocks
+   IBM Carbon Design System palette tokens
+   ============================================ */
+
+/* Keywords, built-ins, and markup tag names */
+.markdown-body pre code .hljs-keyword,
+.markdown-body pre code .hljs-selector-tag,
+.markdown-body pre code .hljs-built_in,
+.markdown-body pre code .hljs-name {
+  color: colors.$blue-40;
+  font-weight: 500;
+}
+
+/* Function names and CLI subcommands */
+.markdown-body pre code .hljs-title {
+  color: colors.$purple-40;
+}
+
+/* Types, classes, and section headers */
+.markdown-body pre code .hljs-type,
+.markdown-body pre code .hljs-section,
+.markdown-body pre code .hljs-class .hljs-title,
+.markdown-body pre code .hljs-title.class_ {
+  color: colors.$teal-30;
+}
+
+/* Strings, symbols, and bullets */
+.markdown-body pre code .hljs-string,
+.markdown-body pre code .hljs-symbol,
+.markdown-body pre code .hljs-bullet {
+  color: colors.$green-30;
+}
+
+/* Numbers, literals, variables, attributes, and YAML/JSON/ENV keys */
+.markdown-body pre code .hljs-number,
+.markdown-body pre code .hljs-literal,
+.markdown-body pre code .hljs-variable,
+.markdown-body pre code .hljs-attr,
+.markdown-body pre code .hljs-attribute,
+.markdown-body pre code .hljs-template-variable,
+.markdown-body pre code .hljs-subst {
+  color: colors.$cyan-30;
+}
+
+/* Parameters and CLI flags */
+.markdown-body pre code .hljs-params {
+  color: colors.$magenta-40;
+}
+
+/* Comments and blockquotes inside code */
+.markdown-body pre code .hljs-comment,
+.markdown-body pre code .hljs-quote {
+  color: colors.$gray-50;
+  font-style: italic;
+}
+
+/* Meta, preprocessor directives, and regex */
+.markdown-body pre code .hljs-meta,
+.markdown-body pre code .hljs-meta .hljs-keyword,
+.markdown-body pre code .hljs-regexp {
+  color: colors.$purple-40;
+}
+
+/* Operators, punctuation, and tag brackets */
+.markdown-body pre code .hljs-operator,
+.markdown-body pre code .hljs-punctuation,
+.markdown-body pre code .hljs-tag {
+  color: var(--cds-text-secondary);
+}
+
+/* Deletion (diff) */
+.markdown-body pre code .hljs-deletion {
+  color: var(--cds-support-error);
+  background-color: var(--cds-notification-background-error);
+}
+
+/* Addition (diff) */
+.markdown-body pre code .hljs-addition {
+  color: var(--cds-support-success);
+  background-color: var(--cds-notification-background-success);
+}
+
+/* Selection highlight */
+.markdown-body pre code ::selection {
+  background-color: var(--cds-highlight);
+}
+
+/* Link in code */
+.markdown-body pre code .hljs-link {
+  color: var(--cds-link-primary);
+  text-decoration: underline;
+}
+
+/* ============================================
+   Light Theme Syntax Highlighting
+   ============================================ */
+
+/* Light theme keywords, built-ins, and markup tag names */
+[data-carbon-theme="white"] .markdown-body pre code .hljs-keyword,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-keyword,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-selector-tag,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-selector-tag,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-built_in,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-built_in,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-name,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-name {
+  color: colors.$blue-70;
+}
+
+/* Light theme function names and CLI subcommands */
+[data-carbon-theme="white"] .markdown-body pre code .hljs-title,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-title {
+  color: colors.$purple-70;
+}
+
+/* Light theme types, classes, and section headers */
+[data-carbon-theme="white"] .markdown-body pre code .hljs-type,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-type,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-section,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-section,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-class .hljs-title,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-class .hljs-title,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-title.class_,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-title.class_ {
+  color: colors.$teal-70;
+}
+
+/* Light theme strings, symbols, and bullets */
+[data-carbon-theme="white"] .markdown-body pre code .hljs-string,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-string,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-symbol,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-symbol,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-bullet,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-bullet {
+  color: colors.$green-70;
+}
+
+/* Light theme numbers, literals, variables, attributes, and YAML/JSON/ENV keys */
+[data-carbon-theme="white"] .markdown-body pre code .hljs-number,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-number,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-literal,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-literal,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-variable,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-variable,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-attr,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-attr,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-attribute,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-attribute,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-template-variable,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-template-variable,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-subst,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-subst {
+  color: colors.$cyan-70;
+}
+
+/* Light theme parameters and CLI flags */
+[data-carbon-theme="white"] .markdown-body pre code .hljs-params,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-params {
+  color: colors.$magenta-70;
+}
+
+/* Light theme comments and quotes */
+[data-carbon-theme="white"] .markdown-body pre code .hljs-comment,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-comment,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-quote,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-quote {
+  color: colors.$gray-60;
+}
+
+/* Light theme meta, preprocessor directives, and regex */
+[data-carbon-theme="white"] .markdown-body pre code .hljs-meta,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-meta,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-meta .hljs-keyword,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-meta .hljs-keyword,
+[data-carbon-theme="white"] .markdown-body pre code .hljs-regexp,
+[data-carbon-theme="g10"] .markdown-body pre code .hljs-regexp {
+  color: colors.$purple-70;
+}

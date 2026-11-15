@@ -1,0 +1,19 @@
+{
+  "title": "QJudge for businesses",
+  "siteUrl": "https://business-docs.example.com",
+  "defaultLocale": "zh-TW",
+  "fallbackLocale": "zh-TW",
+  "locales": [
+    "zh-TW",
+    "en"
+  ],
+  "navigation": [
+    {
+      "title": "Business",
+      "items": [
+        "overview",
+        "nested/setup"
+      ]
+    }
+  ]
+}

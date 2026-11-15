@@ -1,0 +1,20 @@
+{
+  "title": "QJudge Docs",
+  "siteUrl": "https://docs.q-judge.com",
+  "defaultLocale": "zh-TW",
+  "fallbackLocale": "zh-TW",
+  "locales": [
+    "zh-TW",
+    "en"
+  ],
+  "navigation": [
+    {
+      "title": "使用說明",
+      "items": [
+        "overview",
+        "grade-appeal",
+        "exam-precheck-anticheat"
+      ]
+    }
+  ]
+}

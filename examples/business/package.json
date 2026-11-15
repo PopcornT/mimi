@@ -1,0 +1,22 @@
+{
+  "name": "@qjudge/docs-business",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "react-router dev",
+    "build": "react-router build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@qjudge/docs": "0.1.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "@carbon/react": "1.96.0",
+    "react-router": "7.18.2",
+    "@react-router/node": "7.18.2",
+    "isbot": "^5.1.0"
+  },
+  "devDependencies": {
+    "@react-router/dev": "7.18.2"
+  }
+}
