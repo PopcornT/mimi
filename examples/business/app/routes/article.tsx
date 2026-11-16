@@ -1,5 +1,5 @@
 import { useLoaderData } from "react-router";
-import { DocsLayout } from "@qjudge/docs";
+import { DocsLayout } from "@popcornt/qjudge-docs";
 import { source } from "../source.server";
 export function loader({
   params,

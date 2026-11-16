@@ -1,23 +1,41 @@
-name: Prepare package release
+name: Publish private docs package
 on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: publish-docs-package
+  cancel-in-progress: false
 jobs:
-  package:
+  verify:
+    uses: ./.github/workflows/ci.yml
+  publish:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event.repository.private
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
+          registry-url: https://npm.pkg.github.com
       - run: npm ci
-      - run: npm run typecheck && npm run build && npm run build:examples && npm test
-      - run: npm pack -w @qjudge/docs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-candidate
-          path: '*.tgz'
-# Registry publishing is intentionally not enabled until the owner chooses a
-# registry, package scope and access policy. This workflow only creates an artifact.
+      - name: Publish validated package to GitHub Packages
+        run: npm publish --workspace packages/docs --registry=https://npm.pkg.github.com
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify registry install in a clean consumer
+        run: node scripts/verify-registry.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Confirm package remains private
+        run: |
+          visibility=$(gh api /orgs/PopcornT/packages/npm/qjudge-docs --jq .visibility)
+          test "$visibility" = private
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

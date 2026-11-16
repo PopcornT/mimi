@@ -15,7 +15,7 @@ mkdirSync(packDir, { recursive: true });
 const packed = JSON.parse(
   execFileSync(
     "npm",
-    ["pack", "-w", "@qjudge/docs", "--pack-destination", packDir, "--json"],
+    ["pack", "-w", "@popcornt/qjudge-docs", "--pack-destination", packDir, "--json"],
     { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] },
   ),
 )[0];
@@ -31,7 +31,7 @@ for (const site of ["education", "business"]) {
   const manifest = JSON.parse(
     readFileSync(path.join(dir, "package.json"), "utf8"),
   );
-  manifest.dependencies["@qjudge/docs"] =
+  manifest.dependencies["@popcornt/qjudge-docs"] =
     "file:" + path.join(packDir, packed.filename);
   manifest.devDependencies = {
     ...manifest.devDependencies,
@@ -53,7 +53,7 @@ for (const site of ["education", "business"]) {
     path.join(root, "packages/docs/dist/carbon/DocsLayout.js"),
   );
   const installed = readFileSync(
-    path.join(dir, "node_modules/@qjudge/docs/dist/carbon/DocsLayout.js"),
+    path.join(dir, "node_modules/@popcornt/qjudge-docs/dist/carbon/DocsLayout.js"),
   );
   if (!expected.equals(installed))
     throw new Error("Installed package differs from built artifact");

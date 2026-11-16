@@ -1,10 +1,15 @@
 name: Docs framework CI
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -15,7 +20,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run check
       - run: npm run verify:package
-      - run: npm pack -w @qjudge/docs
+      - run: npm pack -w @popcornt/qjudge-docs
       - uses: actions/upload-artifact@v4
         with:
           name: docs-package
