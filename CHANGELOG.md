@@ -1,3 +1,9 @@
+# Mimi 0.1.0
+
+First official release under the Mimi name. Routine updates stay on 0.1.x; larger version changes are reserved for a major redesign. The earlier @popcornt/mimi 0.2.0 publication used a pre-branding version number by mistake and is superseded by 0.1.0.
+
+## Pre-release development history
+
 # 0.2.0
 
 - Remove Fumadocs Core and its transitive dependencies.

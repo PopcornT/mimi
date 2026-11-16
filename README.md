@@ -16,7 +16,7 @@ The check builds the package before typechecking consumers, then builds both exa
 
 ## Using Mimi
 
-The intended public npm package is `@popcornt/mimi`; the first publication is pending npm account authorization. Start from `examples/business` or `examples/education`, configure `docs.config.json`, and supply Markdown files. Each product owns content, images, navigation, branding, domain and deployment. Pin an exact package version with a lockfile.
+The public npm package is `@popcornt/mimi`. Start from `examples/business` or `examples/education`, configure `docs.config.json`, and supply Markdown files. Each product owns content, images, navigation, branding, domain and deployment. Pin an exact package version with a lockfile.
 
 - `@popcornt/mimi`: Carbon DocsLayout, MarkdownRenderer and configuration utilities.
 - `@popcornt/mimi/content`: build/server-only content source and static artifact generation.
@@ -37,9 +37,9 @@ Use frontmatter title/description and optional `draft: true`. Only explicitly su
 
 ## Releases
 
-The first npm publication requires a maintainer with access to the npm `popcornt` scope. GitHub organization ownership does not grant npm scope ownership.
+Normal releases remain in the `0.1.x` series. Increase the minor version only for a major redesign, explicitly decided by the maintainer. Consumers should pin exact versions.
 
-After first publication, configure npm Trusted Publisher: owner `PopcornT`, repository `mimi`, workflow `release.yml`. The manual workflow runs full CI, publishes from main using OIDC and provenance, then verifies anonymous installation. No long-lived npm token is stored in this repo. See https://docs.npmjs.com/trusted-publishers/.
+npm Trusted Publisher is configured for owner `PopcornT`, repository `mimi`, workflow `release.yml`. The manual workflow runs full CI, publishes from main using OIDC and provenance, then verifies anonymous installation. No long-lived npm token is stored in this repo. See https://docs.npmjs.com/trusted-publishers/.
 
 A framework release does not deploy consuming products. Upgrade one consumer at a time, build its actual content, verify links and UI, and retain the prior static deployment artifact for rollback. The existing QJudge app's embedded docs remain independent; standalone-site migration is separate.
 

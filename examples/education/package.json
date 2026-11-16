@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@popcornt/mimi": "0.2.0",
+    "@popcornt/mimi": "0.1.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "@carbon/react": "1.96.0",

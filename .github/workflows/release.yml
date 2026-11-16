@@ -27,6 +27,6 @@ jobs:
       - run: npm install -g npm@11
       - run: npm ci
       - name: Publish using npm trusted publishing
-        run: npm publish --workspace packages/docs --access public --provenance
+        run: npm publish --workspace packages/docs --access public --tag latest --provenance
       - name: Verify anonymous registry installation
         run: node scripts/verify-registry.mjs
