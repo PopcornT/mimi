@@ -2,6 +2,24 @@ import { z } from "zod";
 const segment = z.string().regex(/^[\p{L}\p{N}_-]+$/u);
 export const configSchema = z.object({
   title: z.string().min(1),
+  defaultDoc: z.string().default("overview"),
+  routing: z.enum(["locale-path", "query"]).default("locale-path"),
+  feedback: z.boolean().default(false),
+  quickLinks: z
+    .array(
+      z.object({
+        id: z.string(),
+        icon: z.string().optional(),
+        items: z.array(z.string()).min(1),
+        title: z.record(z.string(), z.string()),
+        description: z.record(z.string(), z.string()).default({}),
+        tag: z.record(z.string(), z.string()).default({}),
+        tagType: z
+          .enum(["blue", "purple", "green", "magenta", "gray"])
+          .default("blue"),
+      }),
+    )
+    .default([]),
   siteUrl: z.url(),
   basePath: z.string().default("/docs"),
   defaultLocale: segment,
@@ -42,7 +60,17 @@ export function defineDocsConfig(
 }
 
 export function docUrl(c: DocsConfig, locale: string, slug: string) {
-  return `/${locale}${c.basePath}/${slug.split("/").map(encodeURIComponent).join("/")}/`;
+  const encoded = slug.split("/").map(encodeURIComponent).join("/");
+  return c.routing === "query"
+    ? `${c.basePath}/${encoded}?lang=${encodeURIComponent(locale)}`
+    : `/${locale}${c.basePath}/${encoded}/`;
+}
+function withLocation(base: string, search: string, hash: string) {
+  const url = new URL(base, "https://docs.invalid");
+  for (const [key, value] of new URLSearchParams(search))
+    url.searchParams.set(key, value);
+  url.hash = hash;
+  return url.pathname + url.search + url.hash;
 }
 export function resolveDocHref(
   c: DocsConfig,
@@ -50,41 +78,30 @@ export function resolveDocHref(
   slug: string,
   href: string,
 ): string {
-  if (href.startsWith("#/docs/")) {
-    const u = new URL(href.slice(7), "https://docs.invalid/");
-    return (
-      docUrl(c, locale, decodeURIComponent(u.pathname.slice(1))) +
-      u.search +
-      u.hash
-    );
-  }
-  if (/^(?:[a-z]+:|\/\/|#)/i.test(href) || href.startsWith("/docs/images/"))
+  let target: URL;
+  if (href.startsWith("#/docs/"))
+    target = new URL(href.slice(7), "https://docs.invalid/");
+  else if (
+    /^(?:[a-z]+:|\/\/|#)/i.test(href) ||
+    href.startsWith("/docs/images/")
+  )
     return href;
-  if (href.startsWith("/docs/")) {
-    const u = new URL(href, "https://docs.invalid");
-    return (
-      docUrl(
-        c,
-        locale,
-        decodeURIComponent(u.pathname.slice(6).replace(/\/$/, "")),
-      ) +
-      u.search +
-      u.hash
-    );
-  }
-  if (/\.md(?:[?#]|$)/.test(href)) {
-    const u = new URL(href, `https://docs.invalid/${slug}`);
-    return (
-      docUrl(
-        c,
-        locale,
-        decodeURIComponent(u.pathname.slice(1).replace(/\.md$/, "")),
-      ) +
-      u.search +
-      u.hash
-    );
-  }
-  return href;
+  else if (href.startsWith("/docs/"))
+    target = new URL(href.slice(6), "https://docs.invalid/");
+  else if (/\.md(?:[?#]|$)/.test(href))
+    target = new URL(href, `https://docs.invalid/${slug}`);
+  else return href;
+  return withLocation(
+    docUrl(
+      c,
+      locale,
+      decodeURIComponent(
+        target.pathname.slice(1).replace(/\.md$/, "").replace(/\/$/, ""),
+      ),
+    ),
+    target.search,
+    target.hash,
+  );
 }
 export function resolveLegacyUrl(
   c: DocsConfig,
@@ -106,7 +123,7 @@ export function resolveLegacyUrl(
   }
   const route = docUrl(c, locale, slug);
   if (!routes.includes(route)) return undefined;
-  return route + (query.size ? "?" + query.toString() : "") + u.hash;
+  return withLocation(route, query.toString(), u.hash);
 }
 export function resolveDocsTheme(
   theme: DocsConfig["theme"],

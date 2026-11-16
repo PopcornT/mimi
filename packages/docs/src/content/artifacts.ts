@@ -1,8 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import { toString } from "mdast-util-to-string";
 import type { SearchEntry } from "../search/index.js";
 import type { DocsSource } from "./index.js";
 const xml = (s: string) =>
@@ -13,11 +10,7 @@ export async function writeDocsArtifacts(source: DocsSource, outDir: string) {
     const index: SearchEntry[] = source.searchEntries(locale).map((p) => ({
       title: p.title,
       description: p.description,
-      text: unified()
-        .use(remarkParse)
-        .parse(p.body)
-        .children.map((node) => toString(node))
-        .join("\n"),
+      text: p.searchText ?? p.body,
       url: p.url,
     }));
     fs.writeFileSync(

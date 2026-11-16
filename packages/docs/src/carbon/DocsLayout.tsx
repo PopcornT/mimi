@@ -30,6 +30,9 @@ import { docUrl, resolveDocHref, resolveDocsTheme } from "../config.js";
 import { DocsSearch } from "./DocsSearch.js";
 import MarkdownRenderer from "./MarkdownRenderer.js";
 
+import type { SearchEntry } from "../search/index.js";
+import { QuickLinks, DocFeedback } from "./Extras.js";
+export type ThemePreference = "system" | "light" | "dark";
 export interface DocsLayoutProps {
   config: DocsConfig;
   page: DocPage;
@@ -38,6 +41,11 @@ export interface DocsLayoutProps {
   footer?: ReactNode;
   headerBrand?: ReactNode;
   availableLocales?: string[];
+  navigate?: (href: string) => void;
+  searchEntries?: SearchEntry[];
+  themePreference?: ThemePreference;
+  onThemeChange?: (mode: ThemePreference) => void;
+  onLocaleChange?: (locale: string) => void;
 }
 export function DocsLayout({
   config,
@@ -47,11 +55,17 @@ export function DocsLayout({
   footer,
   headerBrand,
   availableLocales = config.locales,
+  navigate = (href) => window.location.assign(href),
+  searchEntries,
+  themePreference,
+  onThemeChange,
+  onLocaleChange,
 }: DocsLayoutProps) {
   const searchTrigger = useRef<HTMLButtonElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [mode, setMode] = useState("system");
+  const [storedMode, setMode] = useState("system");
+  const mode = themePreference ?? storedMode;
   const [dark, setDark] = useState(false);
   const label = docsLabels(page.requestedLocale);
   useEffect(() => {
@@ -60,10 +74,11 @@ export function DocsLayout({
     update();
     media.addEventListener("change", update);
     try {
-      setMode(localStorage.getItem(`docs-theme:${config.title}`) || "system");
+      if (!themePreference)
+        setMode(localStorage.getItem(`docs-theme:${config.title}`) || "system");
     } catch {}
     return () => media.removeEventListener("change", update);
-  }, [config.title]);
+  }, [config.title, themePreference]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -74,6 +89,22 @@ export function DocsLayout({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+  const changeTheme = (selectedItem: string | null | undefined) => {
+    if (!selectedItem || !["system", "light", "dark"].includes(selectedItem))
+      return;
+    const value = selectedItem as ThemePreference;
+    setMode(value);
+    if (onThemeChange) onThemeChange(value);
+    else
+      try {
+        localStorage.setItem(`docs-theme:${config.title}`, value);
+      } catch {}
+  };
+  const changeLocale = (selectedItem: string | null | undefined) => {
+    if (!selectedItem) return;
+    onLocaleChange?.(selectedItem);
+    navigate(docUrl(config, selectedItem, page.slug));
+  };
   const theme = resolveDocsTheme(config.theme, mode, dark);
   const icons: Record<string, typeof DocumentBlank> = {
     rocket: Rocket,
@@ -174,12 +205,7 @@ export function DocsLayout({
                 ""
               }
               selectedItem={page.requestedLocale}
-              onChange={({ selectedItem }) => {
-                if (selectedItem)
-                  window.location.assign(
-                    docUrl(config, selectedItem, page.slug),
-                  );
-              }}
+              onChange={({ selectedItem }) => changeLocale(selectedItem)}
             />
             <Dropdown
               id="docs-theme"
@@ -197,17 +223,7 @@ export function DocsLayout({
                   dark: label.dark,
                 })[v || "system"] || ""
               }
-              onChange={({ selectedItem }) => {
-                if (selectedItem) {
-                  setMode(selectedItem);
-                  try {
-                    localStorage.setItem(
-                      `docs-theme:${config.title}`,
-                      selectedItem,
-                    );
-                  } catch {}
-                }
-              }}
+              onChange={({ selectedItem }) => changeTheme(selectedItem)}
             />
           </div>
         </HeaderGlobalBar>
@@ -240,12 +256,7 @@ export function DocsLayout({
                 ""
               }
               selectedItem={page.requestedLocale}
-              onChange={({ selectedItem }) => {
-                if (selectedItem)
-                  window.location.assign(
-                    docUrl(config, selectedItem, page.slug),
-                  );
-              }}
+              onChange={({ selectedItem }) => changeLocale(selectedItem)}
             />
             <Dropdown
               id="mobile-docs-theme"
@@ -263,24 +274,26 @@ export function DocsLayout({
                   dark: label.dark,
                 })[v || "system"] || ""
               }
-              onChange={({ selectedItem }) => {
-                if (selectedItem) {
-                  setMode(selectedItem);
-                  try {
-                    localStorage.setItem(
-                      `docs-theme:${config.title}`,
-                      selectedItem,
-                    );
-                  } catch {}
-                }
-              }}
+              onChange={({ selectedItem }) => changeTheme(selectedItem)}
             />
           </div>
         </nav>
         <main className="qd-mainArea" id="docs-content" tabIndex={-1}>
           <div className="qd-pageHeader">
+            <Button
+              kind="ghost"
+              size="sm"
+              onClick={() => window.history.back()}
+            >
+              {label.back}
+            </Button>
             <h1 className="qd-pageTitle">{page.title}</h1>
             {page.description && <p>{page.description}</p>}
+            {page.lastUpdated && (
+              <p className="qd-pageMeta">
+                {label.updated} {page.lastUpdated}
+              </p>
+            )}
           </div>
           <div className="qd-contentArea">
             <article className="qd-mainContent">
@@ -291,6 +304,13 @@ export function DocsLayout({
                   hideCloseButton
                   title={label.unavailable}
                   subtitle={`${label.showing} ${page.contentLocale}`}
+                />
+              )}
+              {page.slug === config.defaultDoc && (
+                <QuickLinks
+                  config={config}
+                  locale={page.requestedLocale}
+                  entries={entries}
                 />
               )}
               <div lang={page.contentLocale}>
@@ -314,6 +334,9 @@ export function DocsLayout({
                   </MarkdownRenderer>
                 )}
               </div>
+              {config.feedback && (
+                <DocFeedback key={page.slug} locale={page.requestedLocale} />
+              )}
               {footer && <footer>{footer}</footer>}
             </article>
             <aside className="qd-rightSidebar" aria-label={label.toc}>
@@ -350,7 +373,12 @@ export function DocsLayout({
         preventCloseOnClickOutside
       >
         {searchOpen && (
-          <DocsSearch locale={page.requestedLocale} label={label.search} />
+          <DocsSearch
+            locale={page.requestedLocale}
+            label={label.search}
+            entries={searchEntries}
+            onSelect={() => setSearchOpen(false)}
+          />
         )}
       </Modal>
     </Theme>

@@ -5,4 +5,4 @@ export {
   resolveLegacyUrl,
   type DocsConfig,
 } from "./config.js";
-export type { DocPage, DocFile } from "./content/index.js";
+export type { DocPage, DocFile, DocsSnapshot } from "./source.js";

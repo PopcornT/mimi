@@ -1,6 +1,6 @@
 {
   "name": "@popcornt/mimi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "files": [
     "dist"
@@ -14,17 +14,27 @@
       "types": "./dist/content/index.d.ts",
       "import": "./dist/content/index.js"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./layout.css": "./dist/layout.css",
+    "./react-router": {
+      "types": "./dist/react-router.d.ts",
+      "import": "./dist/react-router.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
+    }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && sass --load-path=../../node_modules src/styles.scss dist/styles.css --no-source-map && node scripts/copy-fonts.mjs && node scripts/copy-licenses.mjs",
+    "build": "tsc -p tsconfig.build.json && sass --load-path=../../node_modules src/styles.scss dist/styles.css --no-source-map && sass --load-path=../../node_modules src/layout.scss dist/layout.css --no-source-map && node scripts/copy-fonts.mjs && node scripts/copy-licenses.mjs",
     "prepack": "npm run build"
   },
   "peerDependencies": {
     "@carbon/react": "^1.96.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router": "^7.18.2"
+    "react-router": "^7.18.2",
+    "vite": "^8.3.6"
   },
   "dependencies": {
     "@carbon/icons-react": "^11.70.0",
@@ -60,5 +70,10 @@
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "description": "Mimi: a Carbon-based documentation framework with static publishing and multilingual search"
+  "description": "Mimi: a Carbon-based documentation framework with static publishing and multilingual search",
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  }
 }

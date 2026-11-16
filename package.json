@@ -5,13 +5,14 @@
   "workspaces": [
     "packages/docs",
     "examples/education",
-    "examples/business"
+    "examples/business",
+    "examples/embedded"
   ],
   "scripts": {
     "build": "npm run build -w @popcornt/mimi",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "build:examples": "npm run build -w @popcornt/mimi-education && npm run build -w @popcornt/mimi-business",
+    "build:examples": "npm run build -w @popcornt/mimi-education && npm run build -w @popcornt/mimi-business && npm run build -w @popcornt/mimi-embedded",
     "test:browser": "playwright test",
     "check": "npm run build && npm run typecheck && npm run build:examples && npm test && npm run test:browser",
     "verify:package": "node scripts/verify-package.mjs"

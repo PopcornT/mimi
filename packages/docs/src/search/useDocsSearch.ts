@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { searchDocs, type SearchEntry } from "./index.js";
 
 /** Fetch when the search UI mounts; abort on close or language changes. */
-export function useDocsSearch(locale: string) {
+export function useDocsSearch(locale: string, supplied?: SearchEntry[]) {
   const [query, setQuery] = useState("");
   const [state, setState] = useState<{
     locale: string;
@@ -10,6 +10,7 @@ export function useDocsSearch(locale: string) {
     error?: Error;
   }>({ locale });
   useEffect(() => {
+    if (supplied) return;
     const controller = new AbortController();
     setState({ locale });
     fetch(`/search-index.${encodeURIComponent(locale)}.json`, {
@@ -26,9 +27,9 @@ export function useDocsSearch(locale: string) {
         if (!controller.signal.aborted) setState({ locale, error });
       });
     return () => controller.abort();
-  }, [locale]);
-  const index = state.locale === locale ? state.index : undefined;
-  const error = state.locale === locale ? state.error : undefined;
+  }, [locale, supplied]);
+  const index = supplied ?? (state.locale === locale ? state.index : undefined);
+  const error = !supplied && state.locale === locale ? state.error : undefined;
   const results = useMemo(
     () => (index ? searchDocs(index, query) : []),
     [index, query],
