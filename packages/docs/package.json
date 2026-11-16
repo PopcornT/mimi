@@ -1,5 +1,5 @@
 {
-  "name": "@popcornt/qjudge-docs",
+  "name": "@popcornt/mimi",
   "version": "0.2.0",
   "type": "module",
   "files": [
@@ -17,7 +17,7 @@
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && sass --load-path=../../node_modules src/styles.scss dist/styles.css --no-source-map && node scripts/copy-fonts.mjs",
+    "build": "tsc -p tsconfig.build.json && sass --load-path=../../node_modules src/styles.scss dist/styles.css --no-source-map && node scripts/copy-fonts.mjs && node scripts/copy-licenses.mjs",
     "prepack": "npm run build"
   },
   "peerDependencies": {
@@ -53,10 +53,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PopcornT/qjudge-docs-framework.git",
+    "url": "git+https://github.com/PopcornT/mimi.git",
     "directory": "packages/docs"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  }
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "description": "Mimi: a Carbon-based documentation framework with static publishing and multilingual search"
 }

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { createDocsSource, defineDocsConfig } from "@popcornt/qjudge-docs/content";
+import { createDocsSource, defineDocsConfig } from "@popcornt/mimi/content";
 import rawConfig from "../docs.config.json";
 const contentDir = path.resolve(process.env.DOCS_CONTENT_DIR || "content");
 const config = defineDocsConfig(rawConfig);

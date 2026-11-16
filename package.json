@@ -1,5 +1,5 @@
 {
-  "name": "qjudge-docs-framework",
+  "name": "mimi-workspace",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -8,12 +8,12 @@
     "examples/business"
   ],
   "scripts": {
-    "build": "npm run build -w @popcornt/qjudge-docs",
+    "build": "npm run build -w @popcornt/mimi",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "build:examples": "npm run build -w @popcornt/qjudge-docs-education && npm run build -w @popcornt/qjudge-docs-business",
+    "build:examples": "npm run build -w @popcornt/mimi-education && npm run build -w @popcornt/mimi-business",
     "test:browser": "playwright test",
-    "check": "npm run typecheck && npm run build && npm run build:examples && npm test && npm run test:browser",
+    "check": "npm run build && npm run typecheck && npm run build:examples && npm test && npm run test:browser",
     "verify:package": "node scripts/verify-package.mjs"
   },
   "devDependencies": {

@@ -15,10 +15,13 @@ mkdirSync(packDir, { recursive: true });
 const packed = JSON.parse(
   execFileSync(
     "npm",
-    ["pack", "-w", "@popcornt/qjudge-docs", "--pack-destination", packDir, "--json"],
+    ["pack", "-w", "@popcornt/mimi", "--pack-destination", packDir, "--json"],
     { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] },
   ),
 )[0];
+for (const file of ['dist/licenses/carbon-react/LICENSE', 'dist/licenses/carbon-styles/LICENSE', 'dist/licenses/carbon-icons-react/LICENSE', 'dist/fonts/LICENSE.txt', 'dist/THIRD_PARTY_NOTICES.md', 'LICENSE', 'README.md']) {
+  if (!packed.files.some(entry => entry.path === file)) throw new Error(`Missing release file: ${file}`);
+}
 for (const site of ["education", "business"]) {
   const dir = mkdtempSync(path.join(tmpdir(), "qjudge-docs-" + site + "-"));
   cpSync(path.join(root, "examples", site), dir, {
@@ -31,7 +34,7 @@ for (const site of ["education", "business"]) {
   const manifest = JSON.parse(
     readFileSync(path.join(dir, "package.json"), "utf8"),
   );
-  manifest.dependencies["@popcornt/qjudge-docs"] =
+  manifest.dependencies["@popcornt/mimi"] =
     "file:" + path.join(packDir, packed.filename);
   manifest.devDependencies = {
     ...manifest.devDependencies,
@@ -53,7 +56,7 @@ for (const site of ["education", "business"]) {
     path.join(root, "packages/docs/dist/carbon/DocsLayout.js"),
   );
   const installed = readFileSync(
-    path.join(dir, "node_modules/@popcornt/qjudge-docs/dist/carbon/DocsLayout.js"),
+    path.join(dir, "node_modules/@popcornt/mimi/dist/carbon/DocsLayout.js"),
   );
   if (!expected.equals(installed))
     throw new Error("Installed package differs from built artifact");

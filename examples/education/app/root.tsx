@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
   useMatches,
 } from "react-router";
-import "@popcornt/qjudge-docs/styles.css";
+import "@popcornt/mimi/styles.css";
 export function Layout({ children }: { children: React.ReactNode }) {
   const matches = useMatches();
   const data = matches.at(-1)?.data as

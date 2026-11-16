@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLoaderData } from "react-router";
 import { source } from "../source.server";
-import { DocsLayout, resolveLegacyUrl } from "@popcornt/qjudge-docs";
+import { DocsLayout, resolveLegacyUrl } from "@popcornt/mimi";
 export function loader() {
   return {
     routes: source.routes(),

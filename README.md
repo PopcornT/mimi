@@ -1,83 +1,48 @@
-# QJudge Carbon Docs
+# Mimi
 
-A reusable Carbon documentation package for QJudge's own product lines. Our content loader and static search are owned in this repository; React Router prerenders pages; the UI retains QJudge's Carbon layout and Markdown components.
+A Carbon-based documentation framework for independently deployed product documentation. Mimi owns its content loader and multilingual static search; it has no Fumadocs dependency.
 
-## Local development
+## Development
 
-Use Node 24 (minimum 22.12) and npm. From this repository:
+Node 24 and npm are recommended (minimum Node 22.12).
 
 ```sh
 npm ci
-npm run build
-npm run build:examples
-npm test
-npm run test:browser
-npm run verify:package
-```
-
-`test:browser` starts static servers on 4317/4318. Locally it uses installed Chrome; CI installs Playwright Chromium. `verify:package` packs the package and installs both consumers into fresh temporary directories, without workspace links.
-
-## Product ownership
-
-- This repository: Carbon components, content adapter, build-time artifacts, package tests and releases.
-- Product repositories: Markdown, images, navigation, branding, domain and deployment.
-- One package (`@popcornt/qjudge-docs`), pinned independently by each product. Published privately through GitHub Packages under PopcornT.
-
-Start from `examples/business`. Configure `docs.config.json`, add files to `content/<locale>/<slug>.md`, then build with React Router. It emits `build/client`, suitable for static hosting. Configure your host to serve its `404.html` with HTTP 404; do not turn all unknown URLs into an SPA fallback.
-
-The examples use simple explicit route modules rather than an additional custom CLI. No Fumadocs packages are installed. Only Markdown is supported in this first release; MDX is deferred.
-
-## Package API
-
-- `@popcornt/qjudge-docs`: `DocsLayout`, `MarkdownRenderer`, `defineDocsConfig`, `resolveLegacyUrl`, public types.
-- `@popcornt/qjudge-docs/content`: build/server-only `createDocsSource`, `writeDocsArtifacts` and content types. Never import this entry from client UI.
-- `@popcornt/qjudge-docs/styles.css`: compiled Carbon documentation styles and packaged IBM Plex fonts. Use it in a standalone docs root; it includes Carbon's global stylesheet and is not a CSS-isolated widget stylesheet.
-
-`DocsLayout` takes product `config`, a resolved `page`, and navigation `entries`. Optional `headerBrand`, `footer` and `children` slots enable focused customizations. It never fetches product APIs or accesses application authentication.
-
-Theme preference is local to the documentation site. The default follows system preference. Mobile theme/language controls are inside the navigation menu. Search uses local static JSON and loads when opened.
-
-## Content conventions
-
-- Use frontmatter `title`, `description`, optional `draft: true`, followed by Markdown.
-- Slugs contain letters, numbers, underscores, hyphens, and `/` for nested pages. Duplicate or traversal paths fail the build.
-- Only files explicitly supplied by a product enter the source. Drafts are excluded from pages, search and sitemap. Products must also exclude drafts from raw-file copies.
-- Translation fallback is visibly marked. Canonical points to the actual content language; alternate links list real translations only.
-- Prefer Markdown headings over raw HTML headings so the generated TOC matches the rendered article.
-- Markdown/HTML is trusted repository content, never untrusted user input. Mermaid uses strict mode.
-- Historical `#/docs/...` links are migrated by the root page in the browser, since fragments are not sent to servers. Unknown legacy slugs are not redirected.
-
-## Publishing and upgrading
-
-```sh
 npm run check
 npm run verify:package
-npm pack -w @popcornt/qjudge-docs
 ```
 
-The manual `Publish private docs package` workflow runs the full CI suite before publishing from `main` of this private repository. It uses the short-lived Actions `GITHUB_TOKEN` with `packages:write`, then verifies a clean registry installation. New versions require updating the package version and both example dependencies/lockfile first.
+The check builds the package before typechecking consumers, then builds both examples and runs unit/static/browser tests. Browser tests use installed Chrome locally and Playwright Chromium in CI. Tarball verification installs both example consumers in fresh directories and checks required license files.
 
-Consumers use `@popcornt/qjudge-docs` at an exact version and `.npmrc` scope mapping `@popcornt:registry=https://npm.pkg.github.com`. In Actions, grant the consumer repository read access in the package settings and use `GITHUB_TOKEN` with `packages:read`. If cross-owner access is unavailable, use a dedicated read-only `read:packages` classic PAT stored as a repository secret. Local developers authenticate with their own `read:packages` classic PAT; never commit credentials. GitHub documents authentication at https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry.
+## Using Mimi
 
-The framework source repo is private. Do not commit package tarballs into the public QJudge repository. Fork PRs cannot access private dependencies: run private-package checks only on trusted branches, never expose credentials using `pull_request_target` to execute untrusted PR code.
+The intended public npm package is `@popcornt/mimi`; the first publication is pending npm account authorization. Start from `examples/business` or `examples/education`, configure `docs.config.json`, and supply Markdown files. Each product owns content, images, navigation, branding, domain and deployment. Pin an exact package version with a lockfile.
 
-Upgrade a product with an exact package version and lockfile, build its real content, check preview screenshots/links, then deploy that product independently. Roll back using the previous static deployment artifact and prior lockfile. A framework release does not deploy consumers.
+- `@popcornt/mimi`: Carbon DocsLayout, MarkdownRenderer and configuration utilities.
+- `@popcornt/mimi/content`: build/server-only content source and static artifact generation.
+- `@popcornt/mimi/styles.css`: compiled Carbon styles and packaged IBM Plex fonts. This includes global styles, not an isolated widget stylesheet.
 
-QJudge's integration is in the separate `codex/docs-framework-plan` worktree under `docs-site/`. Its local prototype used a vendored tarball; registry migration must remove that tarball from public branch history. Its original product app's embedded `/docs` remains intact; the new package currently replaces the standalone site's build only.
+The React Router examples generate `build/client` for static hosting. Serve `404.html` with HTTP 404 rather than using an SPA fallback. Deploy generated HTML and search indexes together. Historical hash URLs are migrated client-side; canonical URLs use `/<locale>/docs/<slug>/`.
 
-## Verification status
+## Architecture and content
 
-See `EXECUTION.md`. Local builds and browser checks are separate from remote CI, package publication and production deployment. Business is a framework fixture, not a claim that a commercial product or its docs are released.
+- `content/`: Markdown parsing, locale/slug lookup, translation fallback, routes and build artifacts.
+- `search/index.ts`: portable search JSON contract and pure ranking without React or parser dependencies.
+- `search/useDocsSearch.ts`: browser fetch/cancellation and query state.
+- `carbon/`: presentation and interactions without filesystem access.
+
+Search supports Unicode-normalized, case-insensitive literal matching and CJK substrings. All query terms must match; titles rank above descriptions and body text. Up to 20 article links are returned. Typo tolerance, stemming and section-level results are not implemented.
+
+Use frontmatter title/description and optional `draft: true`. Only explicitly supplied content is published. Drafts are omitted from generated pages and search; consumers must also exclude drafts from raw-file copies. Translation fallback is visibly marked; canonical URLs and alternate links identify actual translations. Markdown/HTML is trusted repository content, not untrusted user input. Mermaid uses strict mode. MDX is deferred.
+
+## Releases
+
+The first npm publication requires a maintainer with access to the npm `popcornt` scope. GitHub organization ownership does not grant npm scope ownership.
+
+After first publication, configure npm Trusted Publisher: owner `PopcornT`, repository `mimi`, workflow `release.yml`. The manual workflow runs full CI, publishes from main using OIDC and provenance, then verifies anonymous installation. No long-lived npm token is stored in this repo. See https://docs.npmjs.com/trusted-publishers/.
+
+A framework release does not deploy consuming products. Upgrade one consumer at a time, build its actual content, verify links and UI, and retain the prior static deployment artifact for rollback. The existing QJudge app's embedded docs remain independent; standalone-site migration is separate.
 
 ## License
 
-MIT. Carbon Markdown renderer/styles derive from QJudge (copyright 2025 quan0715). IBM Plex's font license is included in the built package. Dependencies retain their upstream licenses.
-
-## Internal boundaries
-
-- `content/`: build-time Markdown parsing, page lookup, translation fallback, routes and static artifacts. Node-only dependencies stay here.
-- `search/index.ts`: portable JSON contract and pure query ranking, with no React or Markdown dependencies.
-- `search/useDocsSearch.ts`: browser loading lifecycle, cancellation and query state.
-- `carbon/`: rendering and interaction using Carbon; no content filesystem access.
-
-Search uses normalized, case-insensitive literal matching (including CJK substrings), all query terms must match, and titles rank above descriptions and body text. It returns up to 20 article links. It deliberately does not offer typo tolerance, stemming or section-level results. This keeps the first-party implementation small for our current documentation corpus; benchmark before expanding to large corpora.
+Mimi's original code is MIT. The initial renderer/layout derives from QJudge, copyright 2025 quan0715; the notice is retained. Carbon components/styles/icons remain Apache-2.0; IBM Plex fonts remain OFL-1.1. Their license files and third-party notices ship in the package. Mimi is independently maintained, not an IBM official product.
